@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="山本家アプリ">
+<meta name="theme-color" content="#FFF6DD">
+<title>山本家アプリ</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/portal-180.png">
+<link rel="icon" href="icons/portal-180.png">
+<style>
+  :root { --bg: #FFF6DD; --card: #fff; --ink: #3B2F1E; --dim: #9A8B6E; --line: #F0E4C2; --accent: #FFC51F; --shadow: 0 6px 16px rgba(120, 90, 20, .10); }
+  @media (prefers-color-scheme: dark) { :root { --bg: #221C12; --card: #2F2819; --ink: #F6EDD8; --dim: #AA9D82; --line: #43392A; --shadow: 0 6px 16px rgba(0,0,0,.25); } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", -apple-system, sans-serif; padding: calc(20px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right)); }
+  main { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 2px; }
+  .lead { color: var(--dim); font-size: 13px; margin: 0 0 18px; }
+  h2 { font-size: 13px; color: var(--dim); margin: 18px 0 8px; letter-spacing: .06em; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  a.tile { display: flex; flex-direction: column; gap: 8px; background: var(--card); border-radius: 22px; padding: 14px; box-shadow: var(--shadow); text-decoration: none; color: var(--ink); transition: transform .1s; }
+  a.tile:active { transform: scale(.97); }
+  a.tile img { width: 64px; height: 64px; border-radius: 18px; }
+  a.tile b { font-size: 16px; }
+  a.tile small { color: var(--dim); font-size: 12px; line-height: 1.4; }
+  .soon { opacity: .45; }
+  .soon .badge { display: inline-block; font-size: 10px; font-weight: 800; background: var(--line); border-radius: 999px; padding: 2px 8px; color: var(--dim); }
+  footer { margin-top: 28px; color: var(--dim); font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <h1>山本家アプリ</h1>
+  <p class="lead">ホーム画面に追加しておくと、アプリみたいに開けます。</p>
+
+  <h2>あそぶ</h2>
+  <div class="grid">
+    <a class="tile" href="banaiku/"><img src="icons/banaiku-180.png" alt=""><b>バナイク</b><small>バナナの育成ゲーム。1世代は約1週間。</small></a>
+    <a class="tile" href="banaiku/manual.html"><img src="icons/book-180.png" alt=""><b>バナイク 説明書</b><small>あそびかた・系統・焦らしの表</small></a>
+  </div>
+
+  <h2>これから</h2>
+  <div class="grid">
+    <div class="tile soon"><span class="badge">準備中</span><b>次のアプリ</b><small>できたらここに並びます</small></div>
+  </div>
+
+  <footer>yamamoto-apps</footer>
+</main>
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});</script>
+</body>
+</html>

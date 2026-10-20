@@ -1,0 +1,15 @@
+{
+  "name": "バナイク",
+  "short_name": "バナイク",
+  "description": "バナナの育成ゲーム",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF6DD",
+  "theme_color": "#FFF6DD",
+  "icons": [
+    { "src": "icons/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
