@@ -11,7 +11,7 @@ const Render = (() => {
     const dpr = Math.min(window.devicePixelRatio || 1, 3);
     cv.width = Math.max(1, Math.round(r.width * dpr));
     cv.height = Math.max(1, Math.round(r.height * dpr));
-    k = cv.width / C.VIEW_W;
+    k = cv.height / C.VIEW_H; // 高さ基準。横幅（VIEW_W）は画面の比率に合わせて main.js が決める
   }
 
   const THEME = [
@@ -32,7 +32,7 @@ const Render = (() => {
     g.addColorStop(0, th.sky[0]); g.addColorStop(1, th.sky[1]);
     ctx.fillStyle = g; ctx.fillRect(0, 0, C.VIEW_W, C.VIEW_H);
     if (W.stage === 0) {
-      ctx.fillStyle = '#FFF3B0'; circle(340, 40, 16); ctx.fillStyle = 'rgba(255,243,176,.35)'; circle(340, 40, 24);
+      ctx.fillStyle = '#FFF3B0'; circle(C.VIEW_W - 60, 40, 16); ctx.fillStyle = 'rgba(255,243,176,.35)'; circle(C.VIEW_W - 60, 40, 24);
       ctx.fillStyle = 'rgba(255,255,255,.9)';
       repeat(cam * 0.15, 160, (x, i) => { const y = 30 + hash(i) * 40; ellipse(x + 40, y, 22, 8); ellipse(x + 55, y - 6, 14, 9); ellipse(x + 28, y - 3, 10, 7); });
       ctx.fillStyle = th.far;
@@ -47,9 +47,9 @@ const Render = (() => {
       repeat(cam * 0.5, 110, (x, i) => { ctx.fillRect(x + 50, 40, 12, 170); ellipse(x + 56, 50, 40, 26 + hash(i) * 10); ellipse(x + 30, 70, 24, 16); ellipse(x + 84, 66, 26, 18); });
     } else {
       ctx.fillStyle = '#fff';
-      for (let i = 0; i < 60; i++) { const x = (hash(i) * 600 - cam * 0.05) % 400; const tw = (Math.sin(W.frame * 0.05 + i) + 1) / 2; ctx.globalAlpha = 0.3 + tw * 0.7; ctx.fillRect((x + 400) % 400, hash(i + 50) * 120, 1.5, 1.5); }
+      for (let i = 0; i < 80; i++) { const SW = C.VIEW_W, x = (hash(i) * 900 - cam * 0.05) % SW; const tw = (Math.sin(W.frame * 0.05 + i) + 1) / 2; ctx.globalAlpha = 0.3 + tw * 0.7; ctx.fillRect((x + SW) % SW, hash(i + 50) * 120, 1.5, 1.5); }
       ctx.globalAlpha = 1;
-      ctx.fillStyle = '#FFF1B8'; circle(320, 46, 18); ctx.fillStyle = THEME[2].sky[0]; circle(328, 40, 15);
+      ctx.fillStyle = '#FFF1B8'; circle(C.VIEW_W - 80, 46, 18); ctx.fillStyle = THEME[2].sky[0]; circle(C.VIEW_W - 72, 40, 15);
       ctx.fillStyle = th.far;
       repeat(cam * 0.2, 150, (x, i) => tri(x + 75, 70 + hash(i) * 40, 90, 160));
       ctx.fillStyle = th.near;
@@ -341,30 +341,31 @@ const Render = (() => {
 
   // ---------------- 画面上部の表示 ----------------
   function hud(W) {
-    const p = W.player;
+    const p = W.player, narrow = C.VIEW_W < 380;
+    const L0 = C.SAFE_L || 0, L = L0 - (narrow ? 50 : 0); // 横幅が狭い（iPad など）ときは面の名前を省いて左に詰める
     ctx.fillStyle = 'rgba(0,0,0,.38)'; ctx.fillRect(0, 0, C.VIEW_W, 17);
-    outlined(`${W.stage + 1}. ${W.st.name}`, 6, 12, 9, '#fff', 'left');
+    outlined(narrow ? `${W.stage + 1}.` : `${W.stage + 1}. ${W.st.name}`, L0 + 6, 12, 9, '#fff', 'left');
     // バナナの段階（5本）
-    const bx = 78;
+    const bx = L + 78;
     for (let i = 0; i < 5; i++) miniBanana(bx + i * 11, 9, i < p.level, p.diamond > 0, W.frame + i * 5);
     if (p.diamond > 0) { ctx.fillStyle = '#BFEFFF'; ctx.fillRect(bx - 4, 15, 54 * p.diamond / C.DIAMOND_FRAMES, 1.5); }
     // BKコイン
-    ctx.fillStyle = '#FFD54F'; ellipse(146, 8.5, 4, 5); ctx.fillStyle = '#B7860B'; text('BK', 146, 10.5, 4.5, 'center');
-    outlined(`×${String(W.run.coins).padStart(2, '0')}`, 153, 12, 9, '#fff', 'left');
+    ctx.fillStyle = '#FFD54F'; ellipse(L + 146, 8.5, 4, 5); ctx.fillStyle = '#B7860B'; text('BK', L + 146, 10.5, 4.5, 'center');
+    outlined(`×${String(W.run.coins).padStart(2, '0')}`, L + 153, 12, 9, '#fff', 'left');
     // 残機
-    miniBanana(190, 9, true, false, 0);
-    outlined(`×${W.run.lives}`, 196, 12, 9, '#fff', 'left');
+    miniBanana(L + 190, 9, true, false, 0);
+    outlined(`×${W.run.lives}`, L + 196, 12, 9, '#fff', 'left');
     // 時間
     const sec = Math.ceil(W.time);
     const low = sec <= 30 && W.state === 'play';
-    if (!(low && Math.floor(W.frame / 15) % 2)) outlined(`TIME ${String(sec).padStart(3, '0')}`, 228, 12, 9, low ? '#FF6B6B' : '#fff', 'left');
+    if (!(low && Math.floor(W.frame / 15) % 2)) outlined(`TIME ${String(sec).padStart(3, '0')}`, L + 228, 12, 9, low ? '#FF6B6B' : '#fff', 'left');
     // 状態
-    if (p.slip > 0) outlined('ヌルヌル中…', 6, 28, 8, '#8EE07A', 'left');
+    if (p.slip > 0) outlined('ヌルヌル中…', L0 + 6, 28, 8, '#8EE07A', 'left');
     // 女王様の体力
     const q = W.ents.find(e => e.type === 'queen' && e.alive);
     if (q && W.bossActive) {
-      outlined('女王様', 200, 30, 8, '#FFB3D1', 'right');
-      for (let i = 0; i < 3; i++) { ctx.fillStyle = i < q.hp ? '#FF4F8B' : 'rgba(255,255,255,.3)'; heart(208 + i * 10, 26, 3.4); }
+      outlined('女王様', C.VIEW_W / 2, 30, 8, '#FFB3D1', 'right');
+      for (let i = 0; i < 3; i++) { ctx.fillStyle = i < q.hp ? '#FF4F8B' : 'rgba(255,255,255,.3)'; heart(C.VIEW_W / 2 + 8 + i * 10, 26, 3.4); }
     }
     // 看板の説明
     if (W.signId !== null && W.state === 'play') {

@@ -2,7 +2,10 @@
 // 調整したいときは、まずここの数字を触ればOK。
 const CONFIG = {
   // 画面（ゲーム内の解像度。スマホの画面に合わせて自動で拡大縮小する）
-  VIEW_W: 400,
+  VIEW_W: 400,     // 横幅は画面の比率に合わせて自動で変わる（VIEW_MIN〜VIEW_MAX）
+  VIEW_MIN: 300,
+  VIEW_MAX: 560,
+  SAFE_L: 0, SAFE_R: 0, // iPhone のノッチ分の余白（自動）
   VIEW_H: 225,
   TILE: 16,
 

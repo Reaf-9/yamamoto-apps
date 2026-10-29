@@ -6,16 +6,33 @@
 
   // ---------------- 画面サイズ（16:9 を画面いっぱいに） ----------------
   const stageEl = $('#stage');
+  // 縦は 225 マス分で固定し、横幅を画面の比率に合わせて広げる（黒い余白を出さない）
   function fit() {
-    const vw = window.innerWidth, vh = window.innerHeight;
-    let w = vw, h = vw * 9 / 16;
-    if (h > vh) { h = vh; w = vh * 16 / 9; }
+    const vw = window.innerWidth, vh = window.innerHeight, H = C.VIEW_H;
+    const viewW = Math.max(C.VIEW_MIN, Math.min(C.VIEW_MAX, vw / vh * H));
+    let h = vh, w = h * viewW / H;
+    if (w > vw) { w = vw; h = w * H / viewW; }
+    C.VIEW_W = viewW;
     stageEl.style.width = w + 'px'; stageEl.style.height = h + 'px';
+    const scale = h / H, safe = getComputedStyle($('#safe'));
+    C.SAFE_L = (parseFloat(safe.paddingLeft) || 0) / scale;
+    C.SAFE_R = (parseFloat(safe.paddingRight) || 0) / scale;
     document.documentElement.style.setProperty('--u', (h / 100) + 'px');
     Render.resize();
   }
   addEventListener('resize', fit);
-  addEventListener('orientationchange', () => setTimeout(fit, 200));
+  addEventListener('orientationchange', () => setTimeout(fit, 250));
+  if (window.visualViewport) visualViewport.addEventListener('resize', fit);
+
+  // iPhone の「ダブルタップで拡大」「ピンチで拡大」を止める（画面が寄ったまま戻らなくなるのを防ぐ）
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTouchEnd < 350 && !(e.target.closest && e.target.closest('input'))) e.preventDefault();
+    lastTouchEnd = now;
+  }, { passive: false });
+  document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  for (const t of ['gesturestart', 'gesturechange', 'gestureend', 'dblclick']) document.addEventListener(t, e => e.preventDefault(), { passive: false });
   const portraitTouch = () => matchMedia('(orientation: portrait) and (pointer: coarse)').matches;
 
   // ---------------- 便利 ----------------
@@ -206,6 +223,9 @@
     soundLabel();
     $('#titleChara').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(Chara.svg(0, 'genki', false));
     $('#titleDia').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(Chara.svg(0, 'genki', true));
+    // iPhone の Safari で開いているときは「ホーム画面に追加」で全画面になることを案内
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (ios && !navigator.standalone) $('#a2hs').style.display = '';
     toTitle();
     requestAnimationFrame(loop);
   }
