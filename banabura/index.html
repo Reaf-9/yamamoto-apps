@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="バナブラ">
+<meta name="theme-color" content="#1B1206">
+<meta name="robots" content="noindex, nofollow">
+<title>スーパーバナナブラザーズ</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-scene="scrTitle">
+<div id="stage">
+  <canvas id="cv"></canvas>
+
+  <div id="topbtns">
+    <button id="btnSound" aria-label="音のオンオフ">♪</button>
+    <button id="btnPause" aria-label="ポーズ">II</button>
+  </div>
+
+  <!-- タイトル -->
+  <section id="scrTitle" class="screen">
+    <div class="title-wrap">
+      <div class="charas"><img id="titleChara" alt=""><img id="titleDia" class="dia" alt=""></div>
+      <div>
+        <h1 class="logo"><span class="s1">スーパー</span><span class="s2">バナナ</span><span class="s3">ブラザーズ</span></h1>
+        <div class="menu">
+          <button id="btnStart" class="btn primary">はじめから</button>
+          <button id="btnSelect" class="btn">ステージセレクト</button>
+          <button id="btnRanking" class="btn">ランキング</button>
+        </div>
+        <p class="hint">A＝ジャンプ　B＝押しながらダッシュ<span class="pc">（PC：矢印キー・Z・X）</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ステージセレクト -->
+  <section id="scrSelect" class="screen">
+    <div class="panel">
+      <h2>ステージセレクト</h2>
+      <div id="selectList" class="stagelist"></div>
+      <p class="note">ここからの記録は練習扱い（ランキングには「はじめから」の合計だけが載ります）</p>
+      <div class="row"><button id="btnSelectBack" class="btn">もどる</button></div>
+    </div>
+  </section>
+
+  <!-- ステージ開始 -->
+  <section id="scrIntro" class="screen intro">
+    <p id="introMode" class="mode"></p>
+    <p id="introStage" class="big"></p>
+    <p id="introName" class="name"></p>
+    <p id="introInfo" class="info"></p>
+    <p class="lives"><img src="icons/icon-180.png" alt=""><span id="introLives"></span></p>
+    <p class="tap">タップでスタート</p>
+  </section>
+
+  <!-- 満足度 -->
+  <section id="scrResult" class="screen">
+    <div class="panel result">
+      <p id="resStage" class="sub"></p>
+      <h2>満足度</h2>
+      <ul id="resItems" class="items"></ul>
+      <p class="total"><span id="resTotal">0</span><small>点</small></p>
+      <p id="resRank" class="rankname"></p>
+      <p id="resMsg" class="msg"></p>
+      <div id="resBtns" class="row"></div>
+    </div>
+  </section>
+
+  <!-- 名前入力 -->
+  <section id="scrName" class="screen">
+    <div class="panel">
+      <h2>全ステージクリア！おつかれさま</h2>
+      <ul id="nameScores" class="items"></ul>
+      <p class="total">合計 <span id="nameTotal">0</span><small>点</small></p>
+      <label class="namebox">名前<input id="nameInput" maxlength="8" placeholder="なまえ" autocomplete="off" enterkeyhint="done"></label>
+      <div class="row"><button id="btnNameOk" class="btn primary">記録する</button></div>
+    </div>
+  </section>
+
+  <!-- ランキング -->
+  <section id="scrRanking" class="screen">
+    <div class="panel wide">
+      <h2>ランキング <span id="rankNew" class="newrec">NEW RECORD!</span></h2>
+      <div id="rankMine" class="minebox"></div>
+      <div id="rankTable"></div>
+      <div class="row">
+        <button id="btnRankAgain" class="btn primary">もう一度あそぶ</button>
+        <button id="btnRankTitle" class="btn">タイトルへ</button>
+        <button id="btnRankClear" class="btn small danger">記録を消す</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ゲームオーバー -->
+  <section id="scrOver" class="screen">
+    <div class="panel">
+      <h2 class="over">GAME OVER</h2>
+      <p class="msg">バナナがしおれてしまった…</p>
+      <div class="row">
+        <button id="btnOverRetry" class="btn primary">この面からやり直す</button>
+        <button id="btnOverTitle" class="btn">タイトルへ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ポーズ -->
+  <section id="scrPause" class="screen">
+    <div class="panel">
+      <h2>ポーズ</h2>
+      <div class="menu">
+        <button id="btnResume" class="btn primary">つづける</button>
+        <button id="btnRestart" class="btn">この面を最初から</button>
+        <button id="btnPauseTitle" class="btn">タイトルへ</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 画面内の操作ボタン -->
+<div id="controls">
+  <div id="pad"><span class="l">◀</span><span class="r">▶</span></div>
+  <div id="ab"><div id="btnB" class="pbtn">B</div><div id="btnA" class="pbtn">A</div></div>
+</div>
+
+<div id="rotate"><div><div class="phone"></div><p>スマホを横向きにしてね</p></div></div>
+
+<script src="js/config.js"></script>
+<script src="js/chara.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/input.js"></script>
+<script src="js/stages.js"></script>
+<script src="js/game.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
